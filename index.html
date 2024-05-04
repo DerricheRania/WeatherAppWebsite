@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Weather App</title>
+<style>
+    body{
+        background-image:url(images/background.jpg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 100vh;
+    }
+    .card { 
+        width: 90%;
+        max-width: 470px;
+        background: linear-gradient(135deg, #e098c5, #b2acd8);
+        color: beige;
+        margin: 100px auto 0;
+        border-radius: 20px;
+        padding: 40px 35px;
+        text-align: center;
+    }
+    .searchForm {
+       width: 100%;
+       display: flex;
+       align-items: center;
+       justify-content: space-between;
+    }
+    .search input{
+        border: 0;
+        outline: 0;
+        background: #ebfffc;
+        color: black;
+        padding: 10px 25px;
+        height: 60px;
+        border-radius: 30%;
+        flex: 1;
+        margin-right: 16px;
+        font-size: 18px;
+    }
+    .search button{
+        border: 0;
+        outline: 0;
+        background-color: #ebfffc;
+        border-radius: 50%;
+        width: 40px;
+        height: 60px;
+        cursor: pointer;
+    }
+    .search button img{
+        width: 16px;
+    }
+    .weather-icon{
+        width: 170px;
+        margin-top: 30px;
+    }
+    .weather h1{
+        position: relative;
+        font-size:64px ;
+        font-weight: 500;
+        line-height: 1;
+        margin: 20px 0 6px .30px;
+    }
+    .weather h1 span{
+        position: absolute;
+        font-size: 24px;
+        margin-left: 4px;
+
+    }
+    
+    .weather h2{
+        font-size:45px ;
+        font-weight: 400;
+        margin-top: -10px;
+    }
+    .details{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        margin-top: 50px;
+    }
+    .col{
+        display: flex;
+        align-items: center;
+        text-align: left;
+        color:black;
+    }
+    .col img{
+        width: 40px;
+        margin-right:10px ;
+        color:black;
+    }
+    .humidity, .wind{
+        font-size: 28px;
+        margin-top: -6px;
+        color:black;
+    }
+    .weather{
+        display: none;
+        color:black;
+    }
+    .error{
+        top: 0;
+        left: 0;
+        width: 85%;
+        text-align: center;
+        margin-top: 110px;
+        display: none;
+    }
+    .error img{
+        width: 100%;
+    }
+    .error p{
+       font-size: 25px;
+       font-weight: 500;
+       margin-top: 12px;
+       color:black;
+    }
+</style>
+</head>
+<body>
+ <div class="card">
+    <form id="searchForm" action="#" method="GET">
+        <div class="search">
+            <input type="text" name="city" id="cityInput" placeholder="Enter City Name" spellcheck="false">
+            <button type="submit" id="submitButton">
+                <img src="images/search.png" alt="Search">
+            </button>
+        </div>
+    </form>
+    
+
+     <div class="error">
+        <div class="box">
+            <img src="images/404.png">
+        <p>Oh no! Invalide Location</p>
+        </div>
+     </div>
+
+     <div class="weather">
+        <img src="images/rain.png" class="weather-icon">
+        <h1 class="temp">22<span>°C</span></h1>
+        <h2 class="city">New York</h2>
+     <div class="details">
+        <div class="col">
+            <img src="images/humidity.png">
+            <div>
+                <p class="humidity">50%</p>
+                <p>Humidity</p>
+            </div>
+        </div>
+        <div class="col">
+            <img src="images/wind.png">
+            <div>
+                <p class="wind">15 km/h</p>
+                <p>Wind speed</p>
+            </div>
+        </div>
+     </div>
+</div>
+ </div>
+   <script>
+
+   const apikey = "9717ac70bea3a91d5dd8ba67076e15fa";
+   const url = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+   const searchbox = document.querySelector(".search input");
+   const searchbutton = document.querySelector(".search button");
+   const weatherIcon = document.querySelector(".weather-icon");
+   const weathercondition = document.querySelector(".weatherconditon");
+
+
+   async function checkweather(city){
+    const response = await fetch(url + city + `&appid=${apikey}`);
+
+     if(response.status == 404){
+        document.querySelector(".error").style.display = "block";
+        document.querySelector(".weather").style.display = "none";
+     }else{
+        var data = await response.json();
+
+document.querySelector(".city").innerHTML = data.name;
+document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+
+if(data.weather[0].main == "Clouds"){
+    weatherIcon.src = "images/clouds.png";
+}
+else if(data.weather[0].main == "Clear"){
+    weatherIcon.src = "images/clear.png";
+}
+else if(data.weather[0].main == "Drizzle"){
+    weatherIcon.src = "images/drizzle.png";
+}
+else if(data.weather[0].main == "Mist"){
+    weatherIcon.src = "images/mist.png";
+}
+else if(data.weather[0].main == "Rain"){
+    weatherIcon.src = "images/rain.png";
+}
+else if(data.weather[0].main == "Snow"){
+    weatherIcon.src = "images/snow.png";
+}
+
+document.querySelector(".weather").style.display = "block";
+document.querySelector(".error").style.display = "none";
+     }
+   }
+   searchbutton.addEventListener("click" , ()=>{
+    checkweather(searchbox.value);
+   })
+
+   document.getElementById('searchForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    // Get the value of the input field
+    var city = document.getElementById('cityInput').value;
+
+    // You can do further processing with the city value here, such as making an API call to fetch weather data
+
+    // For now, let's just log the city name to the console
+    console.log('City:', city);
+});
+
+   </script>
+</body>
+</html>
